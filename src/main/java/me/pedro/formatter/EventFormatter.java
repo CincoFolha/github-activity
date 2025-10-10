@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class EventFormatter {
+  private static final int MAX_EVENTS_TO_DISPLAY = 10;
 
   public void displayEvents(JSONArray events) {
     if (events.isEmpty()) {
@@ -16,12 +17,12 @@ public class EventFormatter {
     printFooter(events.length());
   }
 
-  private void printHeader() {
+  private static void printHeader() {
     System.out.println("\nAtividades recentes do GitHub:");
     System.out.println("-".repeat(50));
   }
 
-  private void printEvents(JSONArray events) {
+  private static void printEvents(JSONArray events) {
     int maxEvents = Math.min(events.length(), MAX_EVENTS_TO_DISPLAY);
 
     for (int i = 0; i < maxEvents; i++) {
@@ -30,7 +31,7 @@ public class EventFormatter {
     }
   }
 
-  private void printFooter(int totalEvents) {
+  private static void printFooter(int totalEvents) {
     if (totalEvents > MAX_EVENTS_TO_DISPLAY) {
       System.out.println("\n... e mais " + (totalEvents - MAX_EVENTS_TO_DISPLAY) + " evento(s)");
     }
@@ -55,7 +56,7 @@ public class EventFormatter {
     };
   }
 
-  private String extractRepoName(JSONObject repo) {
+  private static String extractRepoName(JSONObject repo) {
     return repo != null ? repo.optString("name", "desconhecido") : "desconhecido";
   }
 
@@ -114,7 +115,7 @@ public class EventFormatter {
     return String.format("%s em %s", eventName, repoName);
   }
 
-  private String translateRefType(String refType) {
+  private static String translateRefType(String refType) {
     return switch (refType) {
       case "repository" -> "repositótio";
       case "branch" -> "branch";
@@ -123,7 +124,7 @@ public class EventFormatter {
     };
   }
 
-  private String capitalizeFirst(String text) {
+  private static String capitalizeFirst(String text) {
     if (text == null || text.isEmpty()) {
       return text;
     }
