@@ -120,7 +120,6 @@ public class GitHubActivityConsumer {
     String type = event.optString("type", "UnknownEvent");
     JSONObject payload = event.optJSONObject("payload");
     JSONObject repo = event.optJSONObject("repo");
-
     String repoName = repo != null ? repo.optString("name", "desconhecido") : "desconhecido";
 
     return switch (type) {
@@ -139,5 +138,15 @@ public class GitHubActivityConsumer {
       }
       default -> return String.format("%s em %s", type.replace("Event", ""), repoName);
     };
+  }
+
+  private static String formatPushEvent(JSONObject payload, String repoName) {
+    if (payload == null || !payload.has("commits")) {
+      return "Pushed commits para " + repoName;
+    }
+
+    int commitCount = payload.getJSONArray("commits").length();
+    String commitText = commitCount == 1 ? "commit" : "commits";
+    return String.format("Pushed %d %s para %s", commitCount, commitText, repoName);
   }
 }
