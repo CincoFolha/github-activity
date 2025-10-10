@@ -31,4 +31,20 @@ public class HttpClientWrapper {
     conn.setConnectTimeout(CONNECT_TIMEOUT);
     conn.setReadTimeout(READ_TIMEOUT);
   }
+
+  private void validateResponse(HttpURLConnection conn) throws IOException {
+    int responseCode = conn.getResponseCode();
+
+    if (responsecode == HttpURLConnection.HTTP_NOT_FOUND) {
+      throw new IOException("Usuário não encontrado");
+    }
+    
+    if (responseCode == HttpURLConnection.HTTP_FORBIDDEN) {
+      throw new IOException("Limite de requisições excedido. Tente novamente mais tarde");
+    }
+
+    if (responseCode != HttpURLConnection.HTTP_OK) {
+      throw new IOException("Erro HTTP: " + responseCode);
+    }
+  }
 }
