@@ -149,4 +149,16 @@ public class GitHubActivityConsumer {
     String commitText = commitCount == 1 ? "commit" : "commits";
     return String.format("Pushed %d %s para %s", commitCount, commitText, repoName);
   }
+
+  private static String formatIssuesEvent(JSONObject payload, String repoName) {
+    if (payload == null) {
+      return "Interagiu com issues em " + repoName;
+    }
+
+    String action = payload.optString("action", "interagiu com");
+    return String.format("%s issue em %s",
+        action.substring(0, 1).toUpperCase() + action.substring(1), repoName);
+  }
+
+  private static String formatPullRequestEvent(JSONObject)
 }
