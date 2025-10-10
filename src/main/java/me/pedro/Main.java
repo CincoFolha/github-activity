@@ -6,7 +6,7 @@ import org.json.JSONArray;
 
 import java.io.IOException;
 
-public class GitHubActivityConsumer {
+public class Main {
   public static void main(String[] args) {
     if (args.length != 1) {
       System.out.println("Uso: java GitHubActivityConsumer <username>");
