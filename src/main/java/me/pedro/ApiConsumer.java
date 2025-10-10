@@ -123,20 +123,15 @@ public class GitHubActivityConsumer {
     String repoName = repo != null ? repo.optString("name", "desconhecido") : "desconhecido";
 
     return switch (type) {
-      case "PushEvent" -> {
-        int commits = payload != null && payload.has("commits")
-          ? payload.getJSONArray("commits").length()
-          : 0;
-        yield String.format("Pushed %d commit(s) para %s", commits, repoName);
-        }
-      case "IssuesEvent" -> "Interagiu com issues em " + repoName;
-      case "WatchEvent" -> "Deu estrela em " + repoName;
-      case "ForkEvent" -> "Fez fork de " + repoName;
-      case "CreateEvent" -> {
-        String refType = payload != null ? payload.optString("ref_type", "recurso") : "recurso";
-        yield String.format("Criou %s em %s", refType, repoName);
-      }
-      default -> return String.format("%s em %s", type.replace("Event", ""), repoName);
+      case "PushEvent": formatPushEvent(payload, repoName);
+      case "IssuesEvent": formatIssuesEvent(payload, repoName);
+      case "PullRequestEvent": formatPullRequestEvent(payload, repoName);
+      case "WatchEvent": "Deu estrela em " + repoName;
+      case "ForkEvent": "Fez fork de " + repoName;
+      case "CreateEvent": formatCreateEvent(payload, repoName);
+      case "DeleteEvent": formatDeleteEvent(payload, repoName);
+      case "ReleaseEvent": "Publicou release em " + repoName;
+      default: formatGenericEvent(type, repoName);
     };
   }
 
