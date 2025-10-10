@@ -7,5 +7,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 public class HttpClientWrapper {
-
+  private static final String USER_AGENT = "GitHubActivityConsumer/1.0";
+  private static final int CONNECT_TIMEOUT = 5000;
+  private static final int READ_TIMEOUT = 5000;
 }
