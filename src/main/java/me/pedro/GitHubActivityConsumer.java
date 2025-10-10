@@ -1,5 +1,7 @@
 package me.pedro;
 
+import me.pedro.formatter.EventFormatter;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -21,9 +23,11 @@ public class GitHubActivityConsumer {
     }
 
     String username = args[0];
+    EventFormatter formatter = new EventFormatter();
+
     try {
       JSONArray events = fetchGithubEvents(username);
-      displayEvents(events);
+      formatter.displayEvents(events);
     } catch (IOException e) {
       System.err.println("Erro ao buscar eventos: " + e.getMessage());
       System.exit(1);
