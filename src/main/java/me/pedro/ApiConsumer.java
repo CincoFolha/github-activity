@@ -4,9 +4,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class GitHubActivityConsumer {
   private static final String GITHUB_API_URL = "https://api.github.com/users/%s/events";
@@ -35,7 +37,7 @@ public class GitHubActivityConsumer {
   private static JSONArray fetchGithubEvents(String username) throws IOException {
     String apiUrl = String.format(GITHUB_API_URL, username);
     URL url = new URL(apiUrl);
-    HttpURLConnection conn = (HrrpURLConnection) url.openConnection();
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
     try {
       configureConnection(conn);
@@ -43,17 +45,6 @@ public class GitHubActivityConsumer {
       return parseResponse(conn);
     } finally {
       conn.disconect();
-    }
-
-    try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
-      StringBuilder response = new StringBuilder();
-      String line;
-      while ((line = reader.readLine()) != null) {
-        response.append(line);
-      }
-      return new JSONArray(response.toString());
-    } finally {
-      conn.disconnect();
     }
   }
 
@@ -123,15 +114,15 @@ public class GitHubActivityConsumer {
     String repoName = repo != null ? repo.optString("name", "desconhecido") : "desconhecido";
 
     return switch (type) {
-      case "PushEvent": formatPushEvent(payload, repoName);
-      case "IssuesEvent": formatIssuesEvent(payload, repoName);
-      case "PullRequestEvent": formatPullRequestEvent(payload, repoName);
-      case "WatchEvent": "Deu estrela em " + repoName;
-      case "ForkEvent": "Fez fork de " + repoName;
-      case "CreateEvent": formatCreateEvent(payload, repoName);
-      case "DeleteEvent": formatDeleteEvent(payload, repoName);
-      case "ReleaseEvent": "Publicou release em " + repoName;
-      default: formatGenericEvent(type, repoName);
+      case "PushEvent" -> formatPushEvent(payload, repoName);
+      case "IssuesEvent" -> formatIssuesEvent(payload, repoName);
+      case "PullRequestEvent" -> formatPullRequestEvent(payload, repoName);
+      case "WatchEvent" -> "Deu estrela em " + repoName;
+      case "ForkEvent" -> "Fez fork de " + repoName;
+      case "CreateEvent" -> formatCreateEvent(payload, repoName);
+      case "DeleteEvent" -> formatDeleteEvent(payload, repoName);
+      case "ReleaseEvent" -> "Publicou release em " + repoName;
+      default -> formatGenericEvent(type, repoName);
     };
   }
 
@@ -172,10 +163,10 @@ public class GitHubActivityConsumer {
 
     String refType = payload.optString("ref_type", "recurso");
     String refTypeTranslated = switch (refType) {
-      case "repository": "repositório";
-      case "branch": "branch";
-      case "tag": "tag";
-      default: refType;
+      case "repository" -> "repositório";
+      case "branch" -> "branch";
+      case "tag" -> "tag";
+      default -> refType;
     };
 
     return String.format("Criou %s em %s", refTypeTranslated, repoName);
