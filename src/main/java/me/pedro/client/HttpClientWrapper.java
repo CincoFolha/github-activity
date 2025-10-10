@@ -46,5 +46,20 @@ public class HttpClientWrapper {
     if (responseCode != HttpURLConnection.HTTP_OK) {
       throw new IOException("Erro HTTP: " + responseCode);
     }
+  }  
+
+  private String readResponse(HttpURLConnection conn) throws IOException {
+    try (BufferedReader reader = new BufferedReader(
+            new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+
+      StringBuilder response = new StringBuilder();
+      String line;
+
+      while ((line = reader.readLine()) != null) {
+        response.append(line);
+      }
+
+      return response.toString();
+    }
   }
 }
