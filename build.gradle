@@ -13,5 +13,32 @@ dependencies {
 }
 
 application {
-  mainClass = 'me.pedro.GitHubActivityConsumer'
+  mainClass = 'me.pedro.Main'
+}
+
+java {
+  sourceCompatibility = JavaVersion.VERSION_17
+  targetCompatibility = JavaVersion.VERSION_17
+}
+
+jar {
+  manifest {
+    attributes 'Main-Class': 'me.pedro.Main'
+  }
+  from {
+    configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+  }
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+task fatJar(type: Jar) {
+  archiveClassifier = 'all'
+  manifest {
+    attributes 'Main-Class': 'me.pedro.Main'
+  }
+  from {
+    configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+  }
+  with jar
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
