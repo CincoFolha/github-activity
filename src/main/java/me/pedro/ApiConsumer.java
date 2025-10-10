@@ -185,4 +185,13 @@ public class GitHubActivityConsumer {
 
     return String.format("Criou %s em %s", refTypeTranslated, repoName);
   }
+
+  private static String formatDeleteEvent(JSONObject payload, String repoName) {
+    if (payload == null) {
+      return "Deletou recurso em " + repoName;
+    }
+
+    String refType = payload.optString("ref_type", "recurso");
+    return String.format("Deletou %s em %s", refType, repoName);
+  }
 }
