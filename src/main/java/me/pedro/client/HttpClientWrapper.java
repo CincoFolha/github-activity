@@ -23,4 +23,12 @@ public class HttpClientWrapper {
       conn.disconnect();
     }
   }
+
+  private void configureConnection(HttpURLConnection conn) throws IOException {
+    conn.setRequestMethod("GET");
+    conn.setRequestProperty("Accept", "application/vnd.github.v3+json");
+    conn.setRequestProperty("User-Agent", USER_AGENT);
+    conn.setConnectTimeout(CONNECT_TIMEOUT);
+    conn.setReadTimeout(READ_TIMEOUT);
+  }
 }
