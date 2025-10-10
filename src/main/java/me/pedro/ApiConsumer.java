@@ -194,4 +194,9 @@ public class GitHubActivityConsumer {
     String refType = payload.optString("ref_type", "recurso");
     return String.format("Deletou %s em %s", refType, repoName);
   }
+
+  private static String formatGenericEvent(String type, String repoName) {
+    String eventName = type.replace("Event", "");
+    return String.format("%s em %s", eventName, repoName);
+  }
 }
