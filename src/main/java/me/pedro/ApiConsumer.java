@@ -25,7 +25,7 @@ public class GitHubActivityConsumer {
       JSONArray events = fetchGithubEvents(username);
       displayEvents(events);
     } catch (IOException e) {
-      System.err.pritnln("Erro ao buscar eventos: " + e.getMessage());
+      System.err.println("Erro ao buscar eventos: " + e.getMessage());
       System.exit(1);
     } catch (Exception e) {
       System.err.println("Erro inesperado: " + e.getMessage());
@@ -44,7 +44,7 @@ public class GitHubActivityConsumer {
       validateResponse(conn);
       return parseResponse(conn);
     } finally {
-      conn.disconect();
+      conn.disconnect();
     }
   }
 
@@ -103,7 +103,7 @@ public class GitHubActivityConsumer {
     }
 
     if (events.length() > maxEvents) {
-      System.out.pirntln("\n... e mais " + (events.length() - maxEvents) + " evento(s)");
+      System.out.println("\n... e mais " + (events.length() - maxEvents) + " evento(s)");
     }
   }
 
