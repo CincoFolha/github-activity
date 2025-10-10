@@ -8,36 +8,41 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class ApiConsumer {
-
+public class GitHubActivityConsumer {
   private static final String GITHUB_API_URL = "https://api.github.com/users/%s/events";
-  
+  private static final String USER_AGENT = "GitHubActivityConsumer/1.0";
+
   public static void main(String[] args) {
     if (args.length != 1) {
-      System.out.println("Usage: java ApiConsumer <username>");
-      return;
+      System.out.println("Uso: java GitHubActivityConsumer <username>");
+      System.exit(1);
     }
 
     String username = args[0];
     try {
-      JSONArray jsonEvents = fetchGithubEvents(username);
-      displayEvents(jsonEvents);
+      JSONArray events = fetchGithubEvents(username);
+      displayEvents(events);
+    } catch (IOException e) {
+      System.err.pritnln("Erro ao buscar eventos: " + e.getMessage());
+      System.exit(1);
     } catch (Exception e) {
+      System.err.println("Erro inesperado: " + e.getMessage());
       e.printStackTrace();
+      System.exit(1);
     }
   }
 
-  private static JSONArray fetchGithubEvents(String userName) throws Exception {
-    String apiUrl = String.format(GITHUB_API_URL, userName);
+  private static JSONArray fetchGithubEvents(String username) throws IOException {
+    String apiUrl = String.format(GITHUB_API_URL, username);
     URL url = new URL(apiUrl);
-
     HttpURLConnection conn = (HrrpURLConnection) url.openConnection();
-    conn.setRequestMethod("GET");
-    conn.setRequestProperty("Accept", "application/json");
-    
-    int responseCode = conn.getResponseCode();
-    if (responseCode != HttpURLConnection.HTTP_OK) {
-      throw new IOExceoption("Erro HTTP: " + responseCode);
+
+    try {
+      configureConnection(conn);
+      validateResponse(conn);
+      return parseResponse(conn);
+    } finally {
+      conn.disconect();
     }
 
     try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
@@ -52,16 +57,62 @@ public class ApiConsumer {
     }
   }
 
+  private static void configureConnection(HttpURLConnection conn) throws IOException {
+    conn.setRequestMethod("GET");
+    conn.setRequestProperty("Accept", "application/vnd.github.v3+json");
+    conn.setRequestProperty("User-Agent", USER_AGENT);
+    conn.setConnectTimeout(5000);
+    conn.setReadTimeout(5000);
+  }
+
+  private static void validateResponse(HttpURLConnection conn) throws IOException {
+    int responseCode = conn.getResponseCode();
+
+    if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+      throw new IOException("Usuário não encontrado");
+    }
+
+    if (responseCode == HttpURLConnection.HTTP_FORBIDDEN) {
+      throw new IOException("Limite de requisições excedido. Tente novamente mais tarde");
+    }
+
+    if (responseCode != HttpURLConnection.HTTP_OK) {
+      throw new IOException("Erro HTTP: " + responseCode);
+    }
+  }
+
+  private static JSONArray parseResponse(HttpURLConnection conn) throws IOException {
+    try (BufferedReader reader = new BufferedReader(
+            new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+
+      StringBuilder response = new StringBuilder();
+      String line;
+
+      while ((line = reader.readLine()) != null) {
+        response.append(line);
+      }
+
+      return new JSONArray(response.toString());
+    }
+  }
+
   private static void displayEvents(JSONArray events) {
     if (events.isEmpty()) {
       System.out.println("Nenhum evento encontrado.");
       return;
     }
 
-    System.out.println("\nAtividades recentes:");
-    for (int i = 0; i < events.length(); i++) {
+    System.out.println("\nAtividades recentes do GitHub:");
+    System.out.println("-".repeat(50));
+
+    int maxEvents = Math.min(events.length(), 10);
+    for (int i = 0; i < maxEvents; i++) {
       JSONObject event = events.getJSONObject(i);
       System.out.println("- " + formatEvent(event));
+    }
+
+    if (events.length() > maxEvents) {
+      System.out.pirntln("\n... e mais " + (events.length() - maxEvents) + " evento(s)");
     }
   }
 
