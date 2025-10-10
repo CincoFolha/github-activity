@@ -169,4 +169,20 @@ public class GitHubActivityConsumer {
     return String.format("%s pull request em %s",
         action.substring(0, 1).toUpperCase() + action.substring(1), repoName);
   }
+
+  private static String formatCreateEvent(JSONObject payload, String repoName) {
+    if (payload == null) {
+      return "Criou recurso em " + repoName;
+    }
+
+    String refType = payload.optString("ref_type", "recurso");
+    String refTypeTranslated = switch (refType) {
+      case "repository": "repositório";
+      case "branch": "branch";
+      case "tag": "tag";
+      default: refType;
+    };
+
+    return String.format("Criou %s em %s", refTypeTranslated, repoName);
+  }
 }
