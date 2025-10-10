@@ -160,5 +160,13 @@ public class GitHubActivityConsumer {
         action.substring(0, 1).toUpperCase() + action.substring(1), repoName);
   }
 
-  private static String formatPullRequestEvent(JSONObject)
+  private static String formatPullRequestEvent(JSONObject payload, String repoName) {
+    if (payload == null) {
+      return "Interagiu com pull request em " + repoName;
+    }
+
+    String action = payload.optString("action", "interagiu com");
+    return String.format("%s pull request em %s",
+        action.substring(0, 1).toUpperCase() + action.substring(1), repoName);
+  }
 }
