@@ -3,6 +3,7 @@ package me.pedro.client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
@@ -17,7 +18,7 @@ public class HttpClientWrapper {
 
     try {
       configureConnection(conn);
-      validadeResponse(conn);
+      validateResponse(conn);
       return readResponse(conn);
     } finally {
       conn.disconnect();
@@ -35,7 +36,7 @@ public class HttpClientWrapper {
   private void validateResponse(HttpURLConnection conn) throws IOException {
     int responseCode = conn.getResponseCode();
 
-    if (responsecode == HttpURLConnection.HTTP_NOT_FOUND) {
+    if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
       throw new IOException("Usuário não encontrado");
     }
     
