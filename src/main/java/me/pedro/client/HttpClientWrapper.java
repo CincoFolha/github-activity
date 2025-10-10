@@ -10,4 +10,17 @@ public class HttpClientWrapper {
   private static final String USER_AGENT = "GitHubActivityConsumer/1.0";
   private static final int CONNECT_TIMEOUT = 5000;
   private static final int READ_TIMEOUT = 5000;
+
+  public String get(String urlString) throws IOException {
+    URL url = new URL(urlString);
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+    try {
+      configureConnection(conn);
+      validadeResponse(conn);
+      return readResponse(conn);
+    } finally {
+      conn.disconnect();
+    }
+  }
 }
