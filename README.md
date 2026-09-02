@@ -14,7 +14,7 @@ Using Gradle Wrapper:
 ```bash
 ./gradlew build
 ```
-or no Windows: 
+or Windows: 
 ```bash
 ./gradlew.bat build
 ```
